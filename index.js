@@ -8,7 +8,14 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { BOT_TOKEN: token, CLIENT_ID: clientId, GUILD_ID: guildId } = process.env;
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+  ]
+});
 
 
 //** @type {Collection<string, any>} */
@@ -32,31 +39,19 @@ for (const folder of commandFolders) {
   }
 }
 
-client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
+const eventsPath = path.join(__dirname, 'events');
+const eventFile = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
+for (const file of eventFile) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
 
-client.on(Events.InteractionCreate, async interaction => {
-  if (!interaction.isChatInputCommand()) return ;
-
-  const command = interaction.client.commands.get(interaction.commandName);
-
-  if (!command) {
-    console.log(`No command matching ${interaction} was found!`);
-    return ;
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
   }
+}
 
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.log(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: 'There was an error while executing this command', ephemeral: true });
-    } else {
-      await interaction.reply({ content: 'There was an error while executing this command', ephemeral: true });
-    }
-  }
-});
 
 client.login(token);
