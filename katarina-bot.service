@@ -8,7 +8,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=
-ExecStart=/urs/bin/node /home/kat/katarina-bot/index.js
+ExecStart= nodepath apppath 
 Restart=on-failure
 
 [Install]
