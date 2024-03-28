@@ -1,0 +1,16 @@
+# this file runs the app as a deamon 
+#/etc/systemd/system/
+
+[Unit]
+Description=Katarina discord bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=
+ExecStart=/urs/bin/node /home/kat/katarina-bot/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
