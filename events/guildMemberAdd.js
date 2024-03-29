@@ -6,6 +6,7 @@ module.exports = {
     const channel = member.guild.systemChannel;
     if (channel) {
       channel.send(`bem vindo ao server ${member}`)
+             .then(data => console.log(data))
              .catch(error => console.log(error));
     }
 
