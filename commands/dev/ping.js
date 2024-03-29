@@ -1,9 +1,14 @@
 const { SlashCommandBuilder }  = require('discord.js');
+const wait = require('node:timers/promises').setTimeout;
 
 const slashCommand = new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!');
 
 async function execute(interaction) {
-  await interaction.reply('Pong!');
+  const locales = {
+    br: 'Olá mundo!',
+    de: 'Hallo welt!',
+  }
+  await interaction.reply(locales[interaction.locale] ?? 'hello world!');
 }
 
 module.exports = {
