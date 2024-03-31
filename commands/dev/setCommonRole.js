@@ -10,16 +10,16 @@ module.exports = {
         .addStringOption(option => 
           option.setName('role-name')
                 .setDescription('common role name')
-                .setRequired(true)),
+                .setRequired(true))
+        .setDefaultMemberPermissions(0)
+        .setDMPermission(false),
   async execute(interaction) {
     const roleName = interaction.options.getString('role-name'); 
     const guildId = interaction.guildId;
 
     // check if already exist for this guild if y just update the table.
     const guildRow = await prisma.commonUserRole.findUnique({
-      where: {
-        guildId: guildId
-      }
+      where: { guildId: guildId }
     }); 
     // console.log(guildRow);
     if (!guildRow) {
@@ -37,7 +37,22 @@ module.exports = {
       })
       // console.log(res);
     }
-    await interaction.reply(`Common role setted to ${roleName}, this role will be given to any new members.`);
+
+    let role = interaction.guild.roles.cache.find(role => role.name === roleName);
+    if (!role) {
+      role = await interaction.guild.roles.create({
+        name: roleName,
+        description: 'role of the commoners',
+      })
+      .then(console.log)
+      .catch(console.error);
+    }
+    await interaction.reply(`Common role setted to **${roleName}**, this role will be given to any new members.`);
+
+    const botRole = interaction.guild.roles.cache.find(role => role.name === interaction.client.user.username);
+    if (interaction.guild.roles.comparePositions(botRole, role) < 0) {
+      await interaction.followUp(`> **[WARNING] role position is higher than bot's position!\n> Move the bot's position so that is higher than the common role's position\n> (Server Settings > Roles)**`)
+    }
     await prisma.$disconnect();
   }
 }
