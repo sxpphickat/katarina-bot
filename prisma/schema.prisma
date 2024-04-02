@@ -16,6 +16,21 @@ model CommonUserRole {
   name  String
 }
 
+model Leaderboard {
+  id          Int  @id @default(autoincrement()) 
+  guildId     String @unique
+  lastUpdate  DateTime
+}
+
+model Player {
+  id          Int  @id @default(autoincrement()) 
+  PlayerId    String // unique ? 
+  summonerId  String
+  gameName    String
+  tagLine     String
+  server      String
+}
+
 
 model User {
   id    Int     @id @default(autoincrement())

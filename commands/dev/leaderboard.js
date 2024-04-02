@@ -10,8 +10,8 @@ module.exports = {
                     .setDescription('select print style.')
                     .addChoices(
                 { name: 'Terminal', value: 'terminal' }, 
-                { name: 'MarkDown', value: 'markdown' },
-              )),
+                { name: 'MarkDown', value: 'markdown' },))
+            .setDMPermission(false),
   async execute(interaction) {
 
     // table according to database
