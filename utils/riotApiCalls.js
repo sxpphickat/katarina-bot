@@ -29,6 +29,24 @@ async function getAccount(gameName, tagLine) {
           throw new Error(`Riot api error ${res.status}`);
       } 
     });
+  return res;
 }
 
-module.exports = { getAccount };
+
+/** 
+ * @param {string} playerId 
+ * @param {string} server 
+ * @returns {Object}
+ * */
+async function getSummoner(playerId, server) {
+  const req = new URL(`https://${routes['server'][server]}${routes['endpoint']['summoner']}${playerId}`);
+
+  const res = await fetch(req, header)
+    .then(res => {
+      if (!res.ok) { throw new Error(`Riot api error ${res.status}`); } 
+      return res.json();
+    });
+  return res;
+}
+
+module.exports = { getAccount, getSummoner };

@@ -17,14 +17,15 @@ model CommonUserRole {
 }
 
 model Leaderboard {
-  id          Int  @id @default(autoincrement()) 
-  guildId     String @unique
-  lastUpdate  DateTime
+  id            Int  @id @default(autoincrement()) 
+  guildId       String @unique
+  lastUpdate    DateTime
+  playersArray  String
 }
 
 model Player {
-  id          Int  @id @default(autoincrement()) 
-  PlayerId    String // unique ? 
+  id          Int     @id @default(autoincrement()) 
+  playerId    String  @unique
   summonerId  String
   gameName    String
   tagLine     String
