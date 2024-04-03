@@ -8,6 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
         .setName('add-player')
         .setDescription('add a player to the player list.')
+        .setDMPermission(false)
         .addStringOption(option => 
           option.setName('game-name')
                 .setDescription('Game Name + #tag')
@@ -54,7 +55,7 @@ module.exports = {
             await interaction.editReply({content: `> Player **${gameName}** not found`, ephemeral: true});
             break;
           default:
-            await interaction.editReply({ content: '> **Unexpected error! please contact the developers! [summoner]**', ephemeral: true}); 
+            await interaction.editReply({ content: '> **Unexpected error! please contact the developers! [account]**', ephemeral: true}); 
             break;
         }
     });
@@ -110,6 +111,3 @@ module.exports = {
     await interaction.editReply(`> Player **${gameName}** added!`);
   }
 }
-
-
-//server opcional defalt br

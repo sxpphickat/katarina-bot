@@ -1,5 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { AsciiTable3 } = require('ascii-table3');
+const { PrismaClient } = require('@prisma/client');
+const { getEntries } = require('../../utils/riotApiCalls');
+
+const prisma = new PrismaClient();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,13 +12,38 @@ module.exports = {
             .addStringOption(option => 
               option.setName('style')
                     .setDescription('select print style.')
-                    .addChoices(
-                { name: 'Terminal', value: 'terminal' }, 
-                { name: 'MarkDown', value: 'markdown' },))
+                /*     .addChoices(
+                 { name: 'Terminal', value: 'terminal' }, 
+                 { name: 'MarkDown', value: 'markdown' } )*/)
             .setDMPermission(false),
   async execute(interaction) {
+    await interaction.deferReply();
 
-    // table according to database
+    const leaderboard = await prisma.leaderboard.findUnique({
+      where: { guildId: interaction.guildId }
+    })
+
+    if (!leaderboard) {
+      await interaction.editReply(`No players found! Use the **/add-player** command to add players`);
+      return ;
+    }
+
+    const serverPlayerList = JSON.parse(leaderboard.playersArray);
+
+    const players = await prisma.Player.findMany({
+      where: {
+        id: { in: serverPlayerList },
+      }
+    });
+  
+    // console.log(players);
+
+    const entries = await getEntries(players);    
+
+
+    console.log(entries);
+  
+
     const table =
           new AsciiTable3(`${interaction.guild.name}'s ranking`)
           .setHeading('#', 'Summoner', 'Tier', 'LP')
@@ -24,9 +53,7 @@ module.exports = {
                ['0', 'Rita', 47, 'blue'],
                ['0', 'Peter', 8, 'brown']
     ]);
-
-
     table.setStyle('unicode-single');
-    await interaction.reply(`\`\`\`${table.toString()}\`\`\``);
+    await interaction.editReply(`\`\`\`${table.toString()}\`\`\``);
   }
 }
