@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { AsciiTable3 } = require('ascii-table3');
+const { AsciiTable3, AlignmentEnum } = require('ascii-table3');
 const { PrismaClient } = require('@prisma/client');
 const { getEntries } = require('../../utils/riotApiCalls');
+const { comparePlayers } = require('../../utils/compareRanking');
+const { winrate } = require('../../utils/winrate');
 
 const prisma = new PrismaClient();
 
@@ -35,25 +37,37 @@ module.exports = {
         id: { in: serverPlayerList },
       }
     });
-  
+
     // console.log(players);
 
     const entries = await getEntries(players);    
 
+    entries.sort(comparePlayers);
 
-    console.log(entries);
-  
+    // console.log(entries);
+
+    const entryMatrix = entries.map((player, index) => {
+      if (!Object.hasOwn(player, '0')) {
+        return [index + 1, `${player.gameName}\u001b[0;30m#${player.tagLine}\u001b[0;0m` ,'UNRANKED', '', '', '',];
+      }
+      return [
+        index + 1, 
+        `${player.gameName}\u001b[0;30m#${player.tagLine}\u001b[0;0m`,
+        `${player['0'].tier}`,
+        player['0'].rank,
+        player['0'].leaguePoints,
+        winrate(player),
+      ];
+    });
 
     const table =
           new AsciiTable3(`${interaction.guild.name}'s ranking`)
-          .setHeading('#', 'Summoner', 'Tier', 'LP')
-          .addRowMatrix([
-               ['0', 'John', 'EMERALD IV', 88],
-               ['0', 'Mary', 16, 'brown'],
-               ['0', 'Rita', 47, 'blue'],
-               ['0', 'Peter', 8, 'brown']
-    ]);
+          .setHeading('#', 'Summoner', 'Tier', 'Rank', 'LP', 'Winrate')
+          .addRowMatrix(entryMatrix)
+          .setAligns([AlignmentEnum.CENTER, AlignmentEnum.LEFT, AlignmentEnum.LEFT, AlignmentEnum.LEFT, AlignmentEnum.RIGHT, AlignmentEnum.CENTER]);
+
+
     table.setStyle('unicode-single');
-    await interaction.editReply(`\`\`\`${table.toString()}\`\`\``);
+    await interaction.editReply(`\`\`\`ansi\n${table.toString()}\`\`\``);
   }
 }
