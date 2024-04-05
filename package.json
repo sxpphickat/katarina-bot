@@ -1,5 +1,5 @@
-  "name": "katarina-bot",
   {
+  "name": "katarina-bot",
   "version": "1.0.0",
   "description": "discord katarina bot",
   "main": "index.js",
