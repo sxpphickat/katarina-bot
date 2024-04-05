@@ -12,6 +12,7 @@ module.exports = {
         .addStringOption(option => 
           option.setName('game-name')
                 .setDescription('Game Name + #tag')
+                .setMaxLength(22)
                 .setRequired(true))
         .addStringOption(option =>
           option.setName('server')

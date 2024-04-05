@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const { getEntries } = require('../../utils/riotApiCalls');
 const { comparePlayers } = require('../../utils/compareRanking');
 const { winrate } = require('../../utils/winrate');
+const { tierColor } = require('../../utils/tierColor');
 
 const prisma = new PrismaClient();
 
@@ -11,12 +12,6 @@ module.exports = {
   data: new SlashCommandBuilder()
             .setName('leaderboard')
             .setDescription('show server ranking')
-            .addStringOption(option => 
-              option.setName('style')
-                    .setDescription('select print style.')
-                /*     .addChoices(
-                 { name: 'Terminal', value: 'terminal' }, 
-                 { name: 'MarkDown', value: 'markdown' } )*/)
             .setDMPermission(false),
   async execute(interaction) {
     await interaction.deferReply();
@@ -48,12 +43,16 @@ module.exports = {
 
     const entryMatrix = entries.map((player, index) => {
       if (!Object.hasOwn(player, '0')) {
-        return [index + 1, `${player.gameName}\u001b[0;30m#${player.tagLine}\u001b[0;0m` ,'UNRANKED', '', '', '',];
+        return [
+          `${index + 1 <= 3 ? '\u001b[1;31m' : ''}${index + 1}\u001b[0;0m`, 
+          `${player.gameName}\u001b[0;30m#${player.tagLine}\u001b[0;0m`,
+          '\u001b[1;30mUNRANKED\u001b[0;0m',
+          '', '', '',];
       }
       return [
-        index + 1, 
+        `${index + 1 <= 3 ? '\u001b[1;31m' : ''}${index + 1}\u001b[0;0m`, 
         `${player.gameName}\u001b[0;30m#${player.tagLine}\u001b[0;0m`,
-        `${player['0'].tier}`,
+        tierColor(player['0'].tier),
         player['0'].rank,
         player['0'].leaguePoints,
         winrate(player),

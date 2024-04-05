@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "node deploy-commands.js"
+    "deploy": "node deploy-commands.js",
+    "deamon": "forever start index.js"
+    "deamon-stop": "forever stop index.js"
   },
   "author": "",
   "license": "MIT",
