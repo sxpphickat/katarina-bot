@@ -73,9 +73,11 @@ stops the deamon.
 - `/remove-player` - removes a player from the leaderboard.
 
 - `/dance` - Katarina-dancing.gif
+
 	![katarina](./assets/katarina.gif)
 
 - `/leaderboard` - shows the server leaderboard, e.g.
+
 	![leaderboard](./assets/leaderboard.png)
 
 
