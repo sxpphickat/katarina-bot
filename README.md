@@ -4,7 +4,7 @@ _Katarina bot isn't endorsed by Riot Games and doesn't reflect the views or opin
 
 
 
-> [!Table of Contents]
+> [!NOTE]
 > 
 >  - [Install](#Install)
 >  - [Features](#Features)
@@ -73,10 +73,10 @@ stops the deamon.
 - `/remove-player` - removes a player from the leaderboard.
 
 - `/dance` - Katarina-dancing.gif
-	![katarina](katarina.gif)
+	![katarina](./assets/katarina.gif)
 
 - `/leaderboard` - shows the server leaderboard, e.g.
-	![leaderboard](leaderboard.png)
+	![leaderboard](./assets/leaderboard.png)
 
 
 
