@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { SlashCommandBuilder } = require('discord.js');
 const { getAccount, getSummoner } = require('../../utils/riotApiCalls');
+const { checkAccountName } = require('./addPlayer-utils/checkAccountName');
 
 const prisma = new PrismaClient;
 
@@ -39,9 +40,8 @@ module.exports = {
 
     const gameName = interaction.options.getString('game-name');
     const server = interaction.options.getString('server') ?? 'BR1';
-    const regexPattern = /((.{3,16})(#)(.{3,5}))$/
 
-    if (!regexPattern.test(gameName) || gameName.split('#').length - 1 != 1) {
+    if (!checkAccountName(gameName)) {
       await interaction.reply({
         content: `> **invalid Riot Id, follow the pattern GameName#TAG**`,
         ephemeral: true, })
@@ -70,6 +70,9 @@ module.exports = {
 
     if (!summoner) return ;
 
+
+    
+
     const data = {
       gameName: riotAccount.gameName,
       tagLine: riotAccount.tagLine,
@@ -77,38 +80,34 @@ module.exports = {
       server: server,
     };
 
+    // add entries
+  
+
     const player = await prisma.Player.upsert({
       where: { playerId: riotAccount.puuid },
       update: data,
-      create: { ...data, playerId:riotAccount.puuid },
+      create: { ...data, playerId: riotAccount.puuid },
+    })
+
+    const guildInfo = await prisma.guildInfo.findUnique({
+      where: { guildId: interaction.guildId },
     });
 
-    const existingLeaderboard = await prisma.leaderboard.findUnique({
-      where: { guildId: interaction.guildId },
-    })
 
-    const playersArray = existingLeaderboard ? JSON.parse(existingLeaderboard.playersArray) : [];
-    if (!playersArray.includes(player.id)) {
-      playersArray.push(player.id);
+    const leaderboardPlayers = guildInfo.leaderboardPlayers;
+
+    if (!guildInfo.leaderboardPlayers.includes(player.id)) {
+      await prisma.guildInfo.update({
+        where: { guildId: interaction.guildId},
+        data: {
+          leaderboardPlayers: { 
+            push: player.id,
+          }
+        }
+      });
     }
 
-    const leaderboard = await prisma.leaderboard.upsert({
-      where: { guildId: interaction.guildId },
-      update: {
-        playersArray: JSON.stringify(playersArray)  
-      },
-      create: {
-        guildId: interaction.guildId,
-        playersArray: JSON.stringify(playersArray),
-        lastUpdate: new Date(),
-      }
-    })
-
-
-    // console.log({leaderboard});
-    // console.log({player});
-    // const players = await prisma.Player.findMany();
-    // console.log({players});
+    // console.log(guildInfo)
     await interaction.editReply(`> Player **${gameName}** added!`);
   }
 }

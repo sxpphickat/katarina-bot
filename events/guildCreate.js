@@ -1,31 +1,31 @@
 const { Events, Colors } = require('discord.js');
+const { PrismaClient } = require('@prisma/client');
 
 // actions to do when the bot joins a server
+
+
+const prisma = new PrismaClient();
 
 module.exports = {
   name: Events.GuildCreate,
   async execute(guild) {
-    const channel = guild.systemChannel;
-    if (channel) {
-      channel.send(`Noxus prevalecerá!`)
-             .catch(err => console.error(err));
+    try {
+      const channel = guild.systemChannel;
+      if (channel) {
+        await channel.send(`Noxus prevalecerá!`)
+      }
+      const guildHasBot = await prisma.guildInfo.findUnique({
+        where: { guildId: guild.id }
+      })
+
+      if (guildHasBot) { return ; }
+      const guildInfo = await prisma.GuildInfo.create({
+        data: {
+          guildId: guild.id, 
+        }
+      });
+    } catch (e) {
+      console.error(`guild create Error: ${e}`);
     }
-    // let mommyRole = guild.roles.cache.find(role => role.name == 'Mommy');
-    // const katRole = guild.roles.cache.find(role => role.name == guild.client.user.username);
-
-    // const isHigher = katRole.comparePositionTo(mommyRole);
-
-    // console.log(isHigher);
-    // if (!mommyRole || isHigher < 0) {
-    //     mommyRole = await guild.roles.create({
-    //     name: 'Mommy',
-    //     reason: 'Kataria mommmyyyyyy',
-    //   })
-    //     .catch(console.error);
-    // }
-    // const botMember = guild.members.cache.get(guild.client.user.id);
-    // botMember.roles.add(mommyRole)
-    //   .then(console.log)
-    //   .catch(console.error);
   }
 }

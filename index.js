@@ -11,9 +11,9 @@ const { BOT_TOKEN: token, CLIENT_ID: clientId, GUILD_ID: guildId } = process.env
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
   ]
 });
 

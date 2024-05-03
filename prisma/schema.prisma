@@ -6,28 +6,54 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model CommonUserRole {
-  id Int  @id @default(autoincrement()) 
-  guildId String @unique
-  name  String
-}
+model GuildInfo {
+  id                    Int  @id @default(autoincrement()) 
+  guildId               String @unique
 
-model Leaderboard {
-  id            Int  @id @default(autoincrement()) 
-  guildId       String @unique
-  lastUpdate    DateTime
-  playersArray  String
+  lastUpdate            DateTime @default(now())
+  leaderboardPlayers    Int[] @default([]) 
+
+  isGreetingEnabled     Boolean @default(false)
+  greetingMessage       String?
+
+  isCommonRoleEnabled   Boolean @default(false)
+  commonRole            String?
 }
 
 model Player {
   id          Int     @id @default(autoincrement()) 
   playerId    String  @unique
   summonerId  String
+  discord     Json? // talvez só o name seja o sufiviente.
   gameName    String
   tagLine     String
   server      String
+  Entries     Json?
 }
+
+
+// model CommonUserRole {
+//   id Int  @id @default(autoincrement()) 
+//   guildId String @unique
+//   name  String
+// }
+
+// model Leaderboard {
+//   id            Int  @id @default(autoincrement()) 
+//   guildId       String @unique
+//   lastUpdate    DateTime
+//   playersArray  String
+// }
+
+// model Player {
+//   id          Int     @id @default(autoincrement()) 
+//   playerId    String  @unique
+//   summonerId  String
+//   gameName    String
+//   tagLine     String
+//   server      String
+// }

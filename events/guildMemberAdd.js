@@ -7,22 +7,31 @@ const prisma = new PrismaClient();
 module.exports = {
   name: Events.GuildMemberAdd,
   async execute(member) {
-    const channel = member.guild.systemChannel;
-    if (channel) {
-      channel.send(`bem vindo ao server ${member}`)
-             .then(console.log)
-             .catch(console.error);
+    try {
+      const guildInfo= await prisma.guildInfo.findUnique({
+        where: { guildId: member.guild.id }
+      });
+
+      if (!guildInfo) { throw new Error('Guild info not found'); }      
+      if (guildInfo.isGreetingEnabled) {
+        const channel = member.guild.systemChannel;
+        if (channel) {
+          await channel.send(`bem vindo ao server ${member}`)
+                 // .then(console.log)
+        }
+      }
+      
+      if (guildInfo.isCommonRoleEnabled) {
+        const role = member.guild.roles.cache.find(role => role.name === guildInfo.commonRole);
+        if (!role) return console.error("Role not found!"); 
+        await member.roles.add(role)
+            .then(() => console.log(`Added role ${role.name} to ${member.user.tag}`))
+
+      }
+
+    } catch (e) {
+      console.error(`guildMemmberAdd Error: ${e}`);
     }
 
-    const guildSettings = await prisma.commonUserRole.findUnique({
-      where: { guildId: member.guild.id }
-    });
-    if (!guildSettings) return console.error('Common role not set!');
-
-    const role = member.guild.roles.cache.find(role => role.name === guildSettings.name);
-    if (!role) return console.error("Role not found!"); 
-    member.roles.add(role)
-        .then(() => console.log(`Added role ${role.name} to ${member.user.tag}`))
-        .catch(console.error);
   },
 }

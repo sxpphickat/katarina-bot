@@ -37,6 +37,8 @@ module.exports = {
 
     const entries = await getEntries(players);    
 
+    console.log(entries);
+
     entries.sort(comparePlayers);
 
     // console.log(entries);
