@@ -1,4 +1,5 @@
 const { Events } = require('discord.js');
+const { updateLeaderboard } = require('../commands/league/leaderboard-utils/updateLeaderboard');
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -27,6 +28,10 @@ module.exports = {
       } 
       await command.autocomplete(interaction)
         .catch(console.error);
+    } else if (interaction.isButton()) {
+      if (interaction.customId === 'update-leaderboard') {
+        updateLeaderboard(interaction);
+      }
     }
   }
 }

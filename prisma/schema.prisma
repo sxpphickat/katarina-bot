@@ -28,11 +28,11 @@ model Player {
   id          Int     @id @default(autoincrement()) 
   playerId    String  @unique
   summonerId  String
-  discord     Json? // talvez só o name seja o sufiviente.
+  discordId   String? // change to json if needed  
   gameName    String
   tagLine     String
   server      String
-  Entries     Json?
+  entries     Json?
 }
 
 

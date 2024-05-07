@@ -29,8 +29,12 @@ const rank = {
  *
  * */
 function comparePlayers(player1, player2) {
-  const hasRankPlayer1 = Object.hasOwn(player1, '0');
-  const hasRankPlayer2 = Object.hasOwn(player2, '0');
+  player1 = player1.entries;
+  player2 = player2.entries;
+
+  const queueType = 'RANKED_SOLO_5x5';
+  const hasRankPlayer1 = Object.keys(player1[queueType]).length ;
+  const hasRankPlayer2 = Object.keys(player2[queueType]).length ;
 
   if (!hasRankPlayer1 && !hasRankPlayer2) {
     return 0;
@@ -40,22 +44,22 @@ function comparePlayers(player1, player2) {
     return -1;
   }
 
-  const tier1 = tier[player1['0'].tier];  
-  const tier2 = tier[player2['0'].tier];  
+  const tier1 = tier[player1[queueType].tier];  
+  const tier2 = tier[player2[queueType].tier];  
 
   if (tier1 !== tier2) {
     return tier2 - tier1;
   }
 
-  const rank1 = rank[player1['0'].rank];
-  const rank2 = rank[player2['0'].rank];
+  const rank1 = rank[player1[queueType].rank];
+  const rank2 = rank[player2[queueType].rank];
 
   if (rank1 !== rank2) {
     return rank2 - rank1;
   }
   
-  const lp1 = player1['0'].leaguePoints;
-  const lp2 = player2['0'].leaguePoints;
+  const lp1 = player1[queueType].leaguePoints;
+  const lp2 = player2[queueType].leaguePoints;
   
   return lp2 - lp1;
 };

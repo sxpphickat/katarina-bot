@@ -54,27 +54,43 @@ async function getSummoner(playerId, server) {
  * @param {Object[]} playerList 
  * returns {Object}
  * */
-async function getEntries(playerList) {
-  const apiCallsArray = playerList.map(player => {
-    const req = new URL(`https://${routes['server'][player.server]}${routes['endpoint']['entries']}${player.summonerId}`);
+// async function getManyPlayersEntries(playerList) {
+//   const apiCallsArray = playerList.map(player => {
+//     const req = new URL(`https://${routes['server'][player.server]}${routes['endpoint']['entries']}${player.summonerId}`);
 
-    
-    const res = fetch(req, header)
-      .then(res => {
-      if (!res.ok) { throw new Error(`Riot api error [entries] ${res.status}`); } 
-      return res.json().then(data => ({
-        ...player,
-        ...data.filter(it => it.queueType === 'RANKED_SOLO_5x5'),
-      }));
-    })
-    return res;
+//     
+//     const res = fetch(req, header)
+//       .then(res => {
+//       if (!res.ok) { throw new Error(`Riot api error [entries] ${res.status}`); } 
+//       return res.json().then(data => ({
+//         ...player,
+//         ...data.filter(it => it.queueType === 'RANKED_SOLO_5x5'),
+//       }));
+//     })
+//     return res;
+//   });
+
+//   const ret = await Promise.all(apiCallsArray)
+//     // .then(console.log)
+//     .catch(console.error);
+//   return ret;
+// }
+
+async function getOnePlayerEntries(player) {
+  const req = new URL(`https://${routes['server'][player.server]}${routes['endpoint']['entries']}${player.summonerId}`);
+
+  const res = await fetch(req, header)
+    .then(res => {
+    if (!res.ok) { throw new Error(`Riot api error [entries] ${res.status}`); } 
+
+    return res.json().then(data => ({
+      'RANKED_SOLO_5x5': { ...data.filter(it => it.queueType === 'RANKED_SOLO_5x5')['0'] },
+      'RANKED_FLEX_SR' : { ...data.filter(it => it.queueType === 'RANKED_FLEX_SR')['0'] },
+    }));
   });
 
-  const ret = await Promise.all(apiCallsArray)
-    // .then(console.log)
-    .catch(console.error);
-  return ret;
+  return res;
 }
 
 
-module.exports = { getAccount, getSummoner, getEntries };
+module.exports = { getAccount, getSummoner, getOnePlayerEntries };

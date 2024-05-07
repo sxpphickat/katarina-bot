@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { SlashCommandBuilder } = require('discord.js');
-const { getAccount, getSummoner } = require('../../utils/riotApiCalls');
+const { getAccount, getSummoner, getOnePlayerEntries } = require('../../utils/riotApiCalls');
 const { checkAccountName } = require('./addPlayer-utils/checkAccountName');
 
 const prisma = new PrismaClient;
@@ -35,11 +35,16 @@ module.exports = {
                     { name: 'TH2' , value: 'TH2'},
                     { name: 'TW2' , value: 'TW2'},
                     { name: 'VN2' , value: 'VN2'}
-    )),
+    ))
+        .addUserOption(option => 
+          option.setName('discord-user')
+                .setDescription('discord user that owns the account')        
+    ),
   async execute(interaction) {
 
     const gameName = interaction.options.getString('game-name');
     const server = interaction.options.getString('server') ?? 'BR1';
+    const discordUser = interaction.options.getUser('discord-user');
 
     if (!checkAccountName(gameName)) {
       await interaction.reply({
@@ -70,18 +75,17 @@ module.exports = {
 
     if (!summoner) return ;
 
-
-    
+    const entries = await getOnePlayerEntries({ server: server, summonerId: summoner.id })
+      .catch(console.error);
 
     const data = {
       gameName: riotAccount.gameName,
       tagLine: riotAccount.tagLine,
       summonerId: summoner.id,
+      discordId: discordUser ? discordUser.id : null,
       server: server,
+      entries:  entries,
     };
-
-    // add entries
-  
 
     const player = await prisma.Player.upsert({
       where: { playerId: riotAccount.puuid },
@@ -92,7 +96,6 @@ module.exports = {
     const guildInfo = await prisma.guildInfo.findUnique({
       where: { guildId: interaction.guildId },
     });
-
 
     const leaderboardPlayers = guildInfo.leaderboardPlayers;
 
@@ -107,7 +110,7 @@ module.exports = {
       });
     }
 
-    // console.log(guildInfo)
+    // console.log(player)
     await interaction.editReply(`> Player **${gameName}** added!`);
   }
 }

@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "node deploy-commands.js",
     "server": "node index.js",
-    "deploy-and-server": "node deploy-commands && node index.js",
-    "start-dev": "nodemon npm run restart",
+    "deploy-and-server": "node deploy-commands.js && node index.js",
+    "start-dev": "nodemon --exec 'node deploy-commands && node index.js'",
     "deamon": "forever start index.js",
     "deamon-stop": "forever stop index.js"
   },
@@ -25,11 +25,16 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "prisma": "^5.11.0"
+    "path": "^0.12.7",
+    "prisma": "^5.11.0",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
   },
   "nodemonConfig": {
-    "ignore": ["**/test/**", "**/docs/**"],
-    "delay": 2500
+    "ignore": [
+      "**/test/**",
+      "**/docs/**"
+    ],
+    "delay": 700
   }
-
 }

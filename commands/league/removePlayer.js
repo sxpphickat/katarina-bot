@@ -15,16 +15,16 @@ module.exports = {
                 .setRequired(true)),
                 
   async autocomplete(interation) {
-    const guild = await prisma.leaderboard.findUnique({
+    const guildInfo = await prisma.guildInfo.findUnique({
       where: { guildId: interation.guildId }
     });
     
-    if (!guild) return ;
+    if (!guildInfo) return ;
 
-    const serverPlayerList = JSON.parse(guild.playersArray);
+    const leaderboardPlayers = guildInfo.leaderboardPlayers;
 
     const players = await prisma.player.findMany({
-      where: { id: { in: serverPlayerList } },
+      where: { id: { in: leaderboardPlayers } },
     });
 
     const playerChoises = players.map(player => `${player.gameName}#${player.tagLine}`);
@@ -57,13 +57,25 @@ module.exports = {
       await interation.editReply(`Player **${gameName}** not found!`);
       return ;
     }
-    await prisma.player.delete({
-      where: { id: playerToDelete.id }
+
+    const guildInfo = await prisma.guildInfo.findUnique({
+      where: { guildId: interation.guildId },
     })
-      .catch(async () => {
-      await interation.editReply(`Player **${gameName}** not found!`);
-      return ;
-    });
+      .catch(console.error);
+    
+    const deleteIndex = guildInfo.leaderboardPlayers.indexOf(playerToDelete.id);
+
+    const updatedLeaderboardPlayers = guildInfo.leaderboardPlayers;
+    updatedLeaderboardPlayers.splice(deleteIndex, 1);
+
+    const updatedGuildInfo = await prisma.guildInfo.update({
+      where: { guildId: interation.guildId },
+      data: {
+        leaderboardPlayers: updatedLeaderboardPlayers,
+      }
+    })
+      .catch(console.error);
+
     await interation.editReply(`Player **${gameName}** deleted successfully!`);
   }
 }
