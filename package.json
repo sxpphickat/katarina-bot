@@ -36,5 +36,9 @@
       "**/docs/**"
     ],
     "delay": 700
+  },
+  "imports": {
+   "#root/*": "./*",
+    "#utils/*": "./utils/*"
   }
 }
