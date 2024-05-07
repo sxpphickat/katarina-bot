@@ -4,12 +4,12 @@
   "description": "discord katarina bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "init": "bash init.sh",
     "deploy": "node deploy-commands.js",
     "server": "node index.js",
     "deploy-and-server": "node deploy-commands.js && node index.js",
     "start-dev": "nodemon --exec 'node deploy-commands && node index.js'",
-    "deamon": "forever start index.js",
+    "deamon": "node deploy-commands.js && forever start index.js",
     "deamon-stop": "forever stop index.js"
   },
   "author": "",
