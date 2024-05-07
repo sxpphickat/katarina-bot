@@ -3,6 +3,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { PrismaClient } = require('@prisma/client');
 
 
 const { BOT_TOKEN: token, CLIENT_ID: clientId, GUILD_ID: guildId } = process.env;
@@ -16,6 +17,10 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ]
 });
+
+const prisma = new PrismaClient();
+
+module.exports = prisma ;
 
 
 //** @type {Collection<string, any>} */

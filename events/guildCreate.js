@@ -1,10 +1,11 @@
 const { Events, Colors } = require('discord.js');
 const { PrismaClient } = require('@prisma/client');
+const { createGuildInfo } = require('../utils/createGuildInfo');
 
 // actions to do when the bot joins a server
 
 
-const prisma = new PrismaClient();
+const prisma = require('#root/index.js');
 
 module.exports = {
   name: Events.GuildCreate,
@@ -14,16 +15,7 @@ module.exports = {
       if (channel) {
         await channel.send(`Noxus prevalecerá!`)
       }
-      const guildHasBot = await prisma.guildInfo.findUnique({
-        where: { guildId: guild.id }
-      })
-
-      if (guildHasBot) { return ; }
-      const guildInfo = await prisma.GuildInfo.create({
-        data: {
-          guildId: guild.id, 
-        }
-      });
+      await createGuildInfo(guild.id); 
     } catch (e) {
       console.error(`guild create Error: ${e}`);
     }

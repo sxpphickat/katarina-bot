@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { getOnePlayerEntries } = require("../../../utils/riotApiCalls");
 const { createTable } = require("./createTable");
 
-const prisma = new PrismaClient();
+const prisma = require('#root/index.js');
 
 async function updateEntries(interaction) {
   try {

@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const { Events } = require('discord.js');
 
 
-const prisma = new PrismaClient();
+const prisma = require('#root/index.js');
 
 module.exports = {
   name: Events.GuildMemberAdd,

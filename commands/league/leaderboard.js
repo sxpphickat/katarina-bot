@@ -7,8 +7,8 @@ const { winrate } = require('../../utils/winrate');
 const { tierColor } = require('../../utils/tierColor');
 const { playerGames } = require('../../utils/playerGames');
 const { createTable } = require('./leaderboard-utils/createTable');
+const { createGuildInfo } = require('#utils/createGuildInfo.js');
 
-const prisma = new PrismaClient();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,8 +16,10 @@ module.exports = {
             .setDescription('show server ranking')
             .setDMPermission(false),
   async execute(interaction) {
+    const prisma = require('#root/index.js');
     try {
       await interaction.deferReply();
+      await createGuildInfo(interaction.guildId);
 
       const guildInfo = await prisma.guildInfo.findUnique({
         where: { guildId: interaction.guildId }

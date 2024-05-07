@@ -3,7 +3,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const { getAccount, getSummoner, getOnePlayerEntries } = require('../../utils/riotApiCalls');
 const { checkAccountName } = require('./addPlayer-utils/checkAccountName');
 
-const prisma = new PrismaClient;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -41,6 +40,7 @@ module.exports = {
                 .setDescription('discord user that owns the account')        
     ),
   async execute(interaction) {
+    const prisma = require('#root/index.js');
 
     const gameName = interaction.options.getString('game-name');
     const server = interaction.options.getString('server') ?? 'BR1';
