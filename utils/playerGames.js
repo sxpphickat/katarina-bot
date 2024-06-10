@@ -28,8 +28,8 @@ function playerGames(player, queueType) {
   const whiteBg = '\u001b[1;47m';
   const reset = '\u001b[0m';
 
-  const fillBlue = `${blueBg}${' '.repeat(2)}${wins} ${' '.repeat(wr - winLen)}${reset}`;
-  const fillRed = `${redBg}${' '.repeat(lr -lossLen)} ${losses}${' '.repeat(2)}${reset}`;
+  const fillBlue = `${blueBg}${' '.repeat(2)}${wins} ${' '.repeat(Math.max(0, wr - winLen))}${reset}`;
+  const fillRed = `${redBg}${' '.repeat(Math.max(0, lr -lossLen))} ${losses}${' '.repeat(2)}${reset}`;
   // const fillRed = '';
 
 
